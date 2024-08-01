@@ -1,12 +1,12 @@
 <template>
   <div>
     <h1 class="page-title">Crypto Dashboard</h1>
-    <!-- <AlertSystem /> -->
     <CryptoChart />
     <CryptoWatchlist />
     <TransakWidget />
     <TransactionHistory />
-    <button class="form-btn" @click="logout">Logout</button>
+    <AlertSystem />
+    <!-- <button class="form-btn" @click="logout">Logout</button> -->
   </div>
 </template>
 
@@ -15,14 +15,14 @@ import CryptoChart from "~/components/CryptoChart.vue";
 import CryptoWatchlist from "~/components/CryptoWatchlist.vue";
 import TransakWidget from "~/components/TransakWidget.vue";
 import TransactionHistory from "~/components/TransactionHistory.vue";
-// import AlertSystem from "~/components/AlertSystem.vue";
+import AlertSystem from "~/components/AlertSystem.vue";
 
 export default {
   components: {
     CryptoChart,
     CryptoWatchlist,
     TransakWidget,
-    // AlertSystem,
+    AlertSystem,
   },
 
   middleware: "auth",

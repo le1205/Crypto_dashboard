@@ -44,7 +44,6 @@ const signIn = async (req, res) => {
       return resMsg(res, resCode.NO_EXIST, resMessage.NO_EXIST);
     }
   } catch (err) {
-    console.error(err);
     resError(res, err);
   }
 };

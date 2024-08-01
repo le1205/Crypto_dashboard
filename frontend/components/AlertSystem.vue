@@ -1,8 +1,12 @@
 <template>
   <div>
-    <h2>Price Alerts</h2>
-    <form @submit.prevent="addAlert">
-      <input v-model="newAlert.symbol" placeholder="Symbol" required />
+    <h2>Crypto Price Alerts</h2>
+    <form @submit.prevent="createAlert">
+      <input
+        v-model="newAlert.cryptocurrency"
+        placeholder="Cryptocurrency"
+        required
+      />
       <input
         v-model.number="newAlert.targetPrice"
         type="number"
@@ -10,53 +14,64 @@
         placeholder="Target Price"
         required
       />
-      <button type="submit">Add Alert</button>
+      <button type="submit">Create Alert</button>
     </form>
     <ul>
       <li v-for="alert in alerts" :key="alert.id">
-        {{ alert.symbol }} - Target: ${{ alert.targetPrice }}
-        <button @click="removeAlert(alert.id)">Remove</button>
+        <div class="crypto-name">
+          {{ alert.cryptocurrency }} - Target Price: ${{ alert.targetPrice }}
+        </div>
+        <button @click="deleteAlert(alert.id)">Delete</button>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   data() {
     return {
-      alerts: [],
       newAlert: {
-        symbol: "",
+        cryptocurrency: "",
         targetPrice: null,
       },
     };
   },
-  async fetch() {
-    const response = await this.$axios.get("/api/price-alerts");
-    this.alerts = response.data;
+  computed: {
+    ...mapState("alert", ["alerts"]),
   },
   methods: {
-    async addAlert() {
-      const response = await this.$axios.post(
-        "/api/price-alerts",
-        this.newAlert
-      );
-      this.alerts.push(response.data);
-      this.newAlert = { symbol: "", targetPrice: null };
+    async createAlert() {
+      const userId = this.$auth.user.user.id;
+      const token = this.$auth.user.accessToken;
+      await this.$store.dispatch("alert/createAlert", {
+        userId,
+        token,
+        ...this.newAlert,
+      });
+      this.newAlert = { cryptocurrency: "", targetPrice: null };
     },
-    async removeAlert(id) {
-      await this.$axios.delete(`/api/price-alerts/${id}`);
-      this.alerts = this.alerts.filter((alert) => alert.id !== id);
+    async deleteAlert(alertId) {
+      const token = this.$auth.user.accessToken;
+      await this.$store.dispatch("alert/deleteAlert", {
+        alertId,
+        token,
+      });
     },
   },
-  mounted() {
-    this.$socket.on("priceAlertTriggered", (alert) => {
-      this.$toast.success(
-        `Price alert triggered for ${alert.symbol} at $${alert.currentPrice}`
-      );
-      this.alerts = this.alerts.filter((a) => a.id !== alert.id);
-    });
+  async mounted() {
+    const userId = this.$auth.user.user.id;
+    const token = this.$auth.user.accessToken;
+    await this.$store.dispatch("alert/fetchAlerts", { userId, token });
   },
 };
 </script>
+
+<style scoped>
+.crypto-name {
+  display: inline-block;
+  width: 180px;
+}
+</style>

@@ -49,7 +49,6 @@ const getWatchItemList = async (req, res) => {
 
     return resSuccess(res, watchList);
   } catch (err) {
-    console.log(err);
     resError(res, err);
   }
 };

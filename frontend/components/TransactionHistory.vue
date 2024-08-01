@@ -2,7 +2,7 @@
   <div>
     <h1>Transaction History</h1>
     <ul>
-      <li v-for="transaction in transactions" :key="transaction.id">
+      <li v-for="transaction in transaction" :key="transaction.id">
         {{ transaction.cryptocurrency }} - {{ transaction.amount }} -
         {{ transaction.status }}
       </li>
@@ -15,18 +15,18 @@ import { mapState } from "vuex";
 
 export default {
   computed: {
-    ...mapState("transactions", ["transactions"]),
+    ...mapState("transaction", ["transaction"]),
   },
   async fetch() {
     const userId = this.$auth.user.user.id;
     const token = this.$auth.user.accessToken;
-    await this.$store.dispatch("transactions/fetchTransactions", {
+    await this.$store.dispatch("transaction/fetchTransactions", {
       userId,
       token,
     });
   },
   mounted() {
-    this.$store.dispatch("transactions/setupWebSocket");
+    this.$store.dispatch("transaction/setupWebSocket");
   },
 };
 </script>

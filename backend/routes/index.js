@@ -3,6 +3,7 @@ const router = express.Router();
 const authRouter = require("./api/authRouter");
 const watchItemRouter = require("./api/watchItemRouter");
 const transactionRouter = require("./api/transactionRouter");
+const alertRouter = require("./api/alertRouter");
 
 router.use(function (req, res, next) {
   res.header(
@@ -15,5 +16,6 @@ router.use(function (req, res, next) {
 router.use("/auth", authRouter);
 router.use("/watchlist", watchItemRouter);
 router.use("/transaction", transactionRouter);
+router.use("/alert", alertRouter);
 
 module.exports = router;

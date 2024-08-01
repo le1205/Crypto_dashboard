@@ -61,7 +61,6 @@ const getTransaction = async (req, res) => {
     });
     resSuccess(res, transaction);
   } catch (err) {
-    console.log(err);
     resError(res, err);
   }
 };

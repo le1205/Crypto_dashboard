@@ -56,7 +56,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // WebSocket connection handling
 wss.on("connection", (ws) => {
-  console.log("Client connected");
+  console.log("Web-socket-working");
 
   ws.on("message", (message) => {
     console.log("Received:", message);
@@ -70,7 +70,6 @@ wss.on("connection", (ws) => {
 
 // Broadcast function for sending updates to all clients
 function broadcastUpdate(data) {
-  console.log("Web-socket-working");
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(data));
@@ -90,7 +89,7 @@ sequelize
   .sync()
   .then(() => {
     console.log("Database connected");
-    app.listen(port, "0.0.0.0", () =>
+    server.listen(port, "0.0.0.0", () =>
       console.log(`Server up and running on port ${port} !`)
     );
   })

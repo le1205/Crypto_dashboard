@@ -1,4 +1,3 @@
-// store/watchlist.js
 export const state = () => ({
   watchlist: [],
 });
@@ -52,7 +51,6 @@ export const actions = {
           },
         }
       );
-      console.log("Watchlist saved successfully");
     } catch (error) {
       console.error("Error saving watchlist:", error);
       if (error.name === "ExpiredAuthSessionError") {

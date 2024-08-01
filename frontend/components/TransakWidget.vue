@@ -48,7 +48,7 @@ export default {
     async saveTransaction(orderData) {
       const userId = this.$auth.user.user.id;
       try {
-        await this.$axios.post("/transactions/saves", {
+        await this.$axios.post("/transactions/save", {
           orderData,
           id: userId,
         });
