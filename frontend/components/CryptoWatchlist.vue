@@ -51,12 +51,20 @@ export default {
     },
     saveWatchlist() {
       const userId = this.$auth.user.user.id;
-
+      const token = this.$auth.user.accessToken;
       this.$axios
-        .$post("/watchlist/save", {
-          watchlist: this.watchlist,
-          id: userId,
-        })
+        .$post(
+          "/watchlist/save",
+          {
+            watchlist: this.watchlist,
+            id: userId,
+          },
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+          }
+        )
         .then((response) => {
           console.log("Watchlist saved successfully", response);
         })
@@ -74,8 +82,13 @@ export default {
 
     fetchWatchlist() {
       const userId = this.$auth.user.user.id;
+      const token = this.$auth.user.accessToken;
       this.$axios
-        .$get(`/watchlist/retrieve/${userId}`)
+        .$get(`/watchlist/retrieve/${userId}`, {
+          headers: {
+            Authorization: `${token}`,
+          },
+        })
         .then((response) => {
           this.watchlist = Array.isArray(response.data[0].symbol)
             ? response.data[0].symbol

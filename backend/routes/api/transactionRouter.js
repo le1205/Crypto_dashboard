@@ -4,7 +4,7 @@ const authToken = require("../../middleware/authToken");
 const transactionController = require("../../controller/transactionController");
 
 //  save and retrieve transaction history
-router.post("/saves", transactionController.saveTransaction);
-router.get("/retrieve/:id", transactionController.getTransaction);
+router.post("/save", [authToken], transactionController.saveTransaction);
+router.get("/retrieve/:id", [authToken], transactionController.getTransaction);
 
 module.exports = router;

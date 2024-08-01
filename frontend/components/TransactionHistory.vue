@@ -19,13 +19,15 @@ export default {
   },
   async fetch() {
     const userId = this.$auth.user.user.id;
-    const token = this.$auth.strategy.token.get();
-    this.transactions = await this.$axios.$get("/transaction/retrieve", {
-      params: { id: userId },
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const token = this.$auth.user.accessToken;
+    this.transactions = await this.$axios.$get(
+      `/transaction/retrieve/${userId}`,
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
   },
 };
 </script>
