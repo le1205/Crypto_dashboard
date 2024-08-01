@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="transak-widget"></div>
-    <button @click="openTransakWidget">Buy Crypto</button>
+    <button @click="openTransakWidget" class="form-btn">Buy Crypto</button>
   </div>
 </template>
 
@@ -15,12 +15,16 @@ export default {
       const script = document.createElement("script");
       script.src = "https://global.transak.com/sdk/v1.1/widget.js";
       script.async = true;
+      script.onload = () => {
+        console.log("Transak script loaded.");
+      };
       document.body.appendChild(script);
     },
     openTransakWidget() {
+      console.log("Clicked", window.transak);
       if (window.transak) {
         let transak = new window.TransakSDK.default({
-          apiKey: "20f24611-5dd8-401b-8549-5057ed57e820",
+          apiKey: "",
           environment: "STAGING",
           defaultCryptoCurrency: "ETH",
           walletAddress: "", // User's wallet address
@@ -55,3 +59,15 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.form-btn {
+  margin-top: 10px;
+  padding: 8px 24px;
+  background-color: #3d9c7a;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>

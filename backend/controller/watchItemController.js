@@ -13,6 +13,23 @@ const saveWatchItem = async (req, res) => {
         id: userId,
       },
     });
+
+    // Fetch the updated watchlist
+    const updatedWatchList = await User.findOne({
+      where: {
+        id: userId,
+        isDeleted: false,
+      },
+      attributes: ["symbol"],
+    });
+
+    // Broadcast the update to all connected clients
+    req.app.get("broadcastUpdate")({
+      type: "watchlist_update",
+      userId: userId,
+      data: updatedWatchList.symbol,
+    });
+
     resSuccess(res);
   } catch (err) {
     resError(res, err);
@@ -29,6 +46,7 @@ const getWatchItemList = async (req, res) => {
       },
       attributes: ["symbol"],
     });
+
     return resSuccess(res, watchList);
   } catch (err) {
     console.log(err);

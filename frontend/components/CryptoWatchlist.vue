@@ -3,7 +3,9 @@
     <h2>Watchlist</h2>
     <ul>
       <li v-for="crypto in watchlist" :key="crypto">
-        {{ crypto }}
+        <div class="crypto-name">
+          {{ crypto }}
+        </div>
         <button @click="removeCrypto(crypto)">Remove</button>
       </li>
     </ul>
@@ -14,121 +16,71 @@
         placeholder="Add new crypto"
       />
       <button class="form-btn" @click="addCrypto">Add</button>
-      <button class="form-btn" @click="saveWatchlist">Save</button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   data() {
     return {
-      watchlist: [],
       newCrypto: "",
     };
   },
   computed: {
-    ...mapGetters({
-      user: "getUser",
-    }),
+    ...mapState("watchlist", ["watchlist"]),
   },
   methods: {
     addCrypto() {
-      if (!this.watchlist) {
-        this.watchlist = [];
-      }
       if (this.newCrypto && !this.watchlist.includes(this.newCrypto)) {
-        this.watchlist.push(this.newCrypto);
+        this.$store.commit("watchlist/ADD_CRYPTO", this.newCrypto);
         this.newCrypto = "";
         this.saveWatchlist();
       }
     },
     removeCrypto(crypto) {
-      this.watchlist = this.watchlist.filter((c) => c !== crypto);
+      this.$store.commit("watchlist/REMOVE_CRYPTO", crypto);
       this.saveWatchlist();
     },
     saveWatchlist() {
       const userId = this.$auth.user.user.id;
       const token = this.$auth.user.accessToken;
-      this.$axios
-        .$post(
-          "/watchlist/save",
-          {
-            watchlist: this.watchlist,
-            id: userId,
-          },
-          {
-            headers: {
-              Authorization: `${token}`,
-            },
-          }
-        )
-        .then((response) => {
-          console.log("Watchlist saved successfully", response);
-        })
-        .catch((error) => {
-          if (error.name === "ExpiredAuthSessionError") {
-            console.log("Authentication session has expired");
-            // Redirect to login page or show a re-authentication modal
-            this.$auth.logout();
-            this.$router.push("/login");
-          } else {
-            console.error("Error saving watchlist:", error);
-          }
-        });
-    },
-
-    fetchWatchlist() {
-      const userId = this.$auth.user.user.id;
-      const token = this.$auth.user.accessToken;
-      this.$axios
-        .$get(`/watchlist/retrieve/${userId}`, {
-          headers: {
-            Authorization: `${token}`,
-          },
-        })
-        .then((response) => {
-          this.watchlist = Array.isArray(response.data[0].symbol)
-            ? response.data[0].symbol
-            : [];
-        })
-        .catch((error) => {
-          if (error.name === "ExpiredAuthSessionError") {
-            console.log("Authentication session has expired");
-            // Redirect to login page or show a re-authentication modal
-            this.$auth.logout();
-            this.$router.push("/login");
-          } else {
-            console.error("Error fetching watchlist:", error);
-          }
-        });
+      this.$store.dispatch("watchlist/saveWatchlist", { userId, token });
     },
   },
-  mounted() {
-    this.fetchWatchlist();
+  async mounted() {
+    const userId = this.$auth.user.user.id;
+    const token = this.$auth.user.accessToken;
+    await this.$store.dispatch("watchlist/fetchWatchlist", { userId, token });
+    this.$store.dispatch("watchlist/setupWebSocket");
   },
 };
 </script>
 
 <style scoped>
+.crypto-name {
+  display: inline-block;
+  width: 40px;
+}
 .form-group {
   display: flex;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-.form-input {
-  padding: 8px 12px;
-  border-radius: 4px;
-  border: 1px solid #666;
+  align-items: center;
 }
 .form-btn {
+  margin-left: 10px;
   padding: 8px 24px;
   background-color: #3d9c7a;
   border: none;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
+}
+.form-input {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid #999;
 }
 </style>

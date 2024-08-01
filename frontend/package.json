@@ -15,7 +15,9 @@
     "core-js": "^3.25.3",
     "nuxt": "^2.15.8",
     "vue": "^2.7.10",
+    "vue-native-websocket": "^2.0.15",
     "vue-server-renderer": "^2.7.10",
+    "vue-socket.io": "^3.0.10",
     "vue-template-compiler": "^2.7.10"
   }
 }

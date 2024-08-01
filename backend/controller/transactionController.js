@@ -1,5 +1,5 @@
 const { resMsg, resSuccess, resError } = require("../utils/responseMessage");
-const User = require("../model/User");
+const Transaction = require("../model/Transaction");
 require("dotenv").config();
 
 const saveTransaction = async (req, res) => {
@@ -11,8 +11,32 @@ const saveTransaction = async (req, res) => {
     transactionDate: req.body.orderData.transactionDate,
   };
   try {
-    const user = await User.findByPk(userId);
-    await user.update(transactionData);
+    await Transaction.update(transactionData, {
+      where: {
+        user_id: userId,
+      },
+    });
+
+    // Fetch the updated watchlist
+    const updatedTransactionList = await Transaction.findAll({
+      where: {
+        user_id: userId,
+      },
+      attributes: [
+        "id",
+        "cryptoCurrency",
+        "amount",
+        "transactionStatus",
+        "transactionDate",
+      ],
+    });
+
+    req.app.get("broadcastUpdate")({
+      type: "transaction_update",
+      userId: userId,
+      data: updatedTransactionList,
+    });
+
     resSuccess(res);
   } catch (err) {
     resError(res, err);
@@ -22,9 +46,9 @@ const saveTransaction = async (req, res) => {
 const getTransaction = async (req, res) => {
   try {
     const userId = req.params.id;
-    const transaction = await User.findOne({
+    const transaction = await Transaction.findOne({
       where: {
-        id: userId,
+        user_id: userId,
         isDeleted: false,
       },
       attributes: [

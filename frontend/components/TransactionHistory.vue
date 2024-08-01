@@ -11,23 +11,22 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
-  data() {
-    return {
-      transactions: [],
-    };
+  computed: {
+    ...mapState("transactions", ["transactions"]),
   },
   async fetch() {
     const userId = this.$auth.user.user.id;
     const token = this.$auth.user.accessToken;
-    this.transactions = await this.$axios.$get(
-      `/transaction/retrieve/${userId}`,
-      {
-        headers: {
-          Authorization: `${token}`,
-        },
-      }
-    );
+    await this.$store.dispatch("transactions/fetchTransactions", {
+      userId,
+      token,
+    });
+  },
+  mounted() {
+    this.$store.dispatch("transactions/setupWebSocket");
   },
 };
 </script>

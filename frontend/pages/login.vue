@@ -58,7 +58,6 @@ export default {
 
         if (response.code === 200) {
           this.$store.commit("auth/setUser", response.data);
-          console.log("--------------", response.data);
           this.$store.commit("auth/setLoggedIn", true);
           this.$router.push("/");
         } else {

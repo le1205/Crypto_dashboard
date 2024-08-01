@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const session = require("express-session");
 const http = require("http");
-const socketIo = require("socket.io");
+const WebSocket = require("ws");
 const uuidv4 = require("uuid").v4;
 const path = require("path");
 const apiRouter = require("./routes/");
@@ -15,7 +15,7 @@ require("dotenv").config();
 const app = express();
 
 const server = http.createServer(app);
-const io = socketIo(server);
+const wss = new WebSocket.Server({ server });
 
 app.use(
   express.urlencoded({
@@ -47,16 +47,42 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Add WebSocket CORS handling
+wss.on("headers", (headers, req) => {
+  headers.push("Access-Control-Allow-Origin: http://localhost:3000");
+});
+
 app.use(express.static(path.join(__dirname, "public")));
+
+// WebSocket connection handling
+wss.on("connection", (ws) => {
+  console.log("Client connected");
+
+  ws.on("message", (message) => {
+    console.log("Received:", message);
+    // Handle incoming messages if needed
+  });
+
+  ws.on("close", () => {
+    console.log("Client disconnected");
+  });
+});
+
+// Broadcast function for sending updates to all clients
+function broadcastUpdate(data) {
+  console.log("Web-socket-working");
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
+}
+
+// Make broadcastUpdate available to your routes
+app.set("broadcastUpdate", broadcastUpdate);
 
 // Routes
 app.use("/", apiRouter);
-
-io.on("connection", (socket) => {
-  console.log("New WebSocket connection");
-
-  // Implement real-time updates here
-});
 
 const port = process.env.PORT || 5000;
 
