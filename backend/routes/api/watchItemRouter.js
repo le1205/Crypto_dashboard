@@ -5,6 +5,6 @@ const watchItemController = require("../../controller/watchItemController");
 
 //  save and retrieve user watchlists
 router.post("/save", watchItemController.saveWatchItem);
-router.get("/retrieve", watchItemController.getWatchItemList);
+router.get("/retrieve/:id", watchItemController.getWatchItemList);
 
 module.exports = router;

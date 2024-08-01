@@ -5,6 +5,6 @@ const transactionController = require("../../controller/transactionController");
 
 //  save and retrieve transaction history
 router.post("/saves", transactionController.saveTransaction);
-router.get("/retrieve", transactionController.retrieveTransaction);
+router.get("/retrieve/:id", transactionController.getTransaction);
 
 module.exports = router;

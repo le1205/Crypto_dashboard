@@ -19,7 +19,7 @@ const saveTransaction = async (req, res) => {
   }
 };
 
-const retrieveTransaction = async (req, res) => {
+const getTransaction = async (req, res) => {
   try {
     const userId = req.params.id;
     const transaction = await User.findOne({
@@ -37,11 +37,12 @@ const retrieveTransaction = async (req, res) => {
     });
     resSuccess(res, transaction);
   } catch (err) {
+    console.log(err);
     resError(res, err);
   }
 };
 
 module.exports = {
   saveTransaction,
-  retrieveTransaction,
+  getTransaction,
 };

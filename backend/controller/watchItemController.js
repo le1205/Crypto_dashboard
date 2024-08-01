@@ -7,10 +7,12 @@ const saveWatchItem = async (req, res) => {
   const watchListData = {
     symbol: req.body.watchlist,
   };
-
   try {
-    const user = await User.findByPk(userId);
-    await user.update(watchListData);
+    await User.update(watchListData, {
+      where: {
+        id: userId,
+      },
+    });
     resSuccess(res);
   } catch (err) {
     resError(res, err);
@@ -29,6 +31,7 @@ const getWatchItemList = async (req, res) => {
     });
     return resSuccess(res, watchList);
   } catch (err) {
+    console.log(err);
     resError(res, err);
   }
 };

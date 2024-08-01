@@ -50,7 +50,7 @@ export default {
       this.saveWatchlist();
     },
     saveWatchlist() {
-      const userId = this.$auth.user.id;
+      const userId = this.$auth.user.user.id;
 
       this.$axios
         .$post("/watchlist/save", {
@@ -73,14 +73,13 @@ export default {
     },
 
     fetchWatchlist() {
-      const userId = this.$auth.user.id;
-
+      const userId = this.$auth.user.user.id;
       this.$axios
-        .$get("/watchlist/retrieve", {
-          params: { id: userId },
-        })
+        .$get(`/watchlist/retrieve/${userId}`)
         .then((response) => {
-          this.watchlist = Array.isArray(response.data) ? response.data : [];
+          this.watchlist = Array.isArray(response.data[0].symbol)
+            ? response.data[0].symbol
+            : [];
         })
         .catch((error) => {
           if (error.name === "ExpiredAuthSessionError") {
