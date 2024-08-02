@@ -19,7 +19,7 @@ const Alert = sequelize.define(
       allowNull: false,
     },
     targetPrice: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
     isDeleted: {

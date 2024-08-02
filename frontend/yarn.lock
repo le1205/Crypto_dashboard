@@ -1793,7 +1793,7 @@
 
 "@transak/transak-sdk@^3.1.2":
   version "3.1.2"
-  resolved "https://registry.npmjs.org/@transak/transak-sdk/-/transak-sdk-3.1.2.tgz"
+  resolved "https://registry.yarnpkg.com/@transak/transak-sdk/-/transak-sdk-3.1.2.tgz#0cc2e61f1e9ffdddcc5f484441136f1c21adbdf0"
   integrity sha512-y7rb0SKUUEh6VHCRYP2pLPNoBlkZ1Th3goP3uHYN6LHxrpsAapwiG+R/McQwmDl2WLzHAnfXFVRg7oYCxwMYnw==
   dependencies:
     events "^3.3.0"

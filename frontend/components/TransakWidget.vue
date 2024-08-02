@@ -1,48 +1,62 @@
 <template>
   <div>
-    <div id="transak-widget"></div>
     <button @click="openTransakWidget" class="form-btn">Buy Crypto</button>
   </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      transak: null,
+    };
+  },
   mounted() {
     this.loadTransakScript();
   },
   methods: {
     loadTransakScript() {
       const script = document.createElement("script");
-      script.src = "https://global.transak.com/sdk/v1.1/widget.js";
+      script.src = "https://cdn.transak.com/js/sdk/1.4.1/transak.js";
       script.async = true;
       script.onload = () => {
-        console.log("Transak script loaded.");
+        console.log("Transak script loaded");
+        this.initTransak();
       };
       document.body.appendChild(script);
     },
-    openTransakWidget() {
-      console.log("Clicked", window.transak);
-      if (window.transak) {
-        let transak = new window.TransakSDK.default({
-          apiKey: "",
-          environment: "STAGING",
-          defaultCryptoCurrency: "ETH",
-          walletAddress: "", // User's wallet address
-          themeColor: "000000",
-          email: "", // User's email
-          redirectURL: "",
-        });
+    initTransak() {
+      const userEmail = this.$auth.user.user.email;
+      const transakConfig = {
+        apiKey: "", // Your provided API key
+        environment: "STAGING", // Change to 'PRODUCTION' when ready
+        defaultCryptoCurrency: "ETH",
+        walletAddress: "",
+        themeColor: "000000",
+        email: userEmail,
+        redirectURL: "",
+      };
 
-        transak.init();
+      this.transak = new window.TransakSDK.default(transakConfig);
 
-        transak.on(transak.ALL_EVENTS, (data) => {
-          console.log(data);
-        });
+      // Set up event listeners
+      this.transak.on(this.transak.ALL_EVENTS, (data) => {
+        console.log("Transak Event:", data);
+      });
 
-        transak.on(transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, (orderData) => {
-          console.log(orderData);
+      this.transak.on(
+        this.transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL,
+        (orderData) => {
+          console.log("Successful Order:", orderData);
           this.saveTransaction(orderData);
-        });
+        }
+      );
+    },
+    openTransakWidget() {
+      if (this.transak) {
+        this.transak.init();
+      } else {
+        console.error("Transak not initialized");
       }
     },
     async saveTransaction(orderData) {
@@ -52,6 +66,7 @@ export default {
           orderData,
           id: userId,
         });
+        console.log("Transaction saved successfully");
       } catch (error) {
         console.error("Error saving transaction:", error);
       }
